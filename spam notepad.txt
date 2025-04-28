@@ -1,0 +1,77 @@
+""" spam email detector
+Python code """
+
+
+
+import streamlit as st
+import pickle
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+import string
+
+# ✅ NLTK downloads
+nltk.download('stopwords')
+nltk.download('punkt')
+
+# ✅ Pre-load NLTK tools
+ps = PorterStemmer()
+stop_words = set(stopwords.words('english'))
+
+# ✅ Text Preprocessing Function
+def transform_text(text):
+    text = text.lower()
+    text = word_tokenize(text)
+
+    # ✅ Remove non-alphanumeric characters
+    text = [word for word in text if word.isalnum()]
+
+    # ✅ Remove stopwords and punctuation
+    text = [word for word in text if word not in stop_words and word not in string.punctuation]
+
+    # ✅ Apply stemming
+    text = [ps.stem(word) for word in text]
+
+    return " ".join(text)
+
+# ✅ Load the saved model and vectorizer
+try:
+    with open('vectorizer.pkl', 'rb') as f:
+        tfidf = pickle.load(f)
+
+    with open('model.pkl', 'rb') as f:
+        model = pickle.load(f)
+
+except FileNotFoundError:
+    st.error("❌ Model and vectorizer files not found. Please ensure they are in the same directory.")
+    st.stop()
+
+# ✅ Streamlit UI
+st.title("📧 Email/SMS Spam Classifier")
+
+# ✅ User Input for Prediction
+input_sms = st.text_area("Enter the message")
+
+# ✅ Custom Threshold Slider
+threshold = st.slider("Select Threshold", 0.1, 0.9, 0.6, 0.05)
+
+if st.button('Predict'):
+    if input_sms.strip() == "":  # Handle empty input
+        st.warning("⚠️ Please enter a message before predicting.")
+        st.stop()
+
+    # ✅ Preprocess the input
+    transformed_sms = transform_text(input_sms)
+
+    # ✅ Vectorize the input
+    vector_input = tfidf.transform([transformed_sms])
+
+    # ✅ Predict the Probability
+    prob = model.predict_proba(vector_input)[0][1]  # Spam probability
+
+    # ✅ Apply the Threshold
+    if prob >= threshold:
+        st.header(f"🚫 Spam (Confidence: {prob:.2f})")
+    else:
+        st.header(f"✅ Not Spam (Confidence: {1 - prob:.2f})")
