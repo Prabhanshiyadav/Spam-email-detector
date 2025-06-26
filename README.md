@@ -19,5 +19,10 @@ Python
 Pandas
 Scikit-learn
 Streamlit
-Machine Learning models: Naïve Bayes, Logistic Regression, SVM
+
+
+Machine Learning models : '
+Naïve Bayes, 
+Logistic Regression,
+SVM
 
