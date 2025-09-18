@@ -1,6 +1,7 @@
 ﻿# Spam-email-detector
 A Machine Learning-based web app to detect whether an email is Spam or Not Spam.
 
+
 🚀 Overview
 This project uses machine learning algorithms to classify emails as spam or not spam.
 It is deployed using Streamlit for an interactive web experience. Users can enter an email text and instantly get a prediction.
@@ -25,4 +26,5 @@ Machine Learning models : '
 Naïve Bayes, 
 Logistic Regression,
 SVM
+
 
